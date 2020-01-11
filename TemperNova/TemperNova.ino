@@ -27,15 +27,15 @@ void loop() {
 
   displayBluetoothLogo(0, 0);
   sendTempUpdate(80);
-  displayTemp(80, true, true);
+  displayTemp(80, true, true, true);  // int temp, bool showUnits, bool showDiff, bool showBluetoothLogo
 
   delay(3000);
   sendTempUpdate(60);
-  displayTemp(60, true, true);
+  displayTemp(60, true, true, true);
   
   delay(3000);
   sendTempUpdate(72);
-  displayTemp(72, true, true);
+  displayTemp(72, true, true, true);
 
   delay(3000);
 }

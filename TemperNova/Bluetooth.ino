@@ -34,6 +34,27 @@ class BluetoothServerCallbacks: public BLEServerCallbacks {
     }
 };
 
+class BluetoothCharacteristicCallbacks: public BLECharacteristicCallbacks {
+    void onWrite(BLECharacteristic *pCharacteristic) {
+      std::string value = pCharacteristic->getValue();
+      String valueStr = "";
+      
+      if (value.length() > 0) {
+        Serial.print("New Bluetooth value: ");
+        for (int i = 0; i < value.length(); i++) {
+          Serial.print(value[i]);
+          valueStr+= value[i];
+        }
+          
+        Serial.println();
+        int temp = valueStr.toInt();
+        if (temp != 0) {
+          targetTemp = temp;
+        }
+      }
+    }
+};
+
 void setupBluetooth() {
   Serial.begin(115200);
   Serial.println("Starting BLE work!");
@@ -47,9 +68,10 @@ void setupBluetooth() {
                                          BLECharacteristic::PROPERTY_READ |
                                          BLECharacteristic::PROPERTY_WRITE
                                        );
-                                       
+
+  pCharacteristic->setCallbacks(new BluetoothCharacteristicCallbacks());
   pCharacteristic->addDescriptor(new BLE2902());
-  pCharacteristic->setValue("TEMP: 69, UP");
+  pCharacteristic->setValue("69");
   pService->start();
   // BLEAdvertising *pAdvertising = pServer->getAdvertising();  // this still is working for backward compatibility
   BLEAdvertising *pAdvertising = BLEDevice::getAdvertising();
@@ -58,7 +80,7 @@ void setupBluetooth() {
   pAdvertising->setMinPreferred(0x06);  // functions that help with iPhone connections issue
   pAdvertising->setMinPreferred(0x12);
   BLEDevice::startAdvertising();
-  Serial.println("Characteristic defined! Now you can read it in your phone!");
+  Serial.println("Characteristic defined! Starting to advertise connection...");
 }
 
 bool isConnected() {
@@ -69,17 +91,19 @@ void sendTempUpdate(int newTemp) {
   // check to see if device is connected...
   if (deviceConnected) {
     String message = "TEMP: " + String(newTemp) + ", UP";
-//    std::string msg = "TEMP: "  + std::string(newTemp) + ", UP";
     pCharacteristic->setValue("TEMP: 80, UP");
 
-    char txString[8]; // make sure this is big enuffz
+    char txString[8]; // make sure this is big enuff
     itoa(newTemp, txString, 10);
     double temp = (double)newTemp;
-//    dtostrf(temp, 1, 2, txString);
-//    pCharacteristic->setValue(&temp, 1);
+
     pCharacteristic->setValue(txString);
 
     pCharacteristic->notify();
     delay(3);
   }
+}
+
+int getTargetTemp() {
+  return targetTemp;
 }

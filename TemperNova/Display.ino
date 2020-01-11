@@ -37,7 +37,7 @@ void displayBluetoothLogo(int time, int del) {
   delay(time);
 }
 
-void displayTemp(int temp, bool showUnits, bool showBluetoothLogo) {
+void displayTemp(int temp, bool showUnits, bool showDiff, bool showBluetoothLogo) {
   if (!temp) {
     return;
   }
@@ -53,9 +53,23 @@ void displayTemp(int temp, bool showUnits, bool showBluetoothLogo) {
 //  std::string temp = tempStr.concat("°C");
   
   if (showUnits) {
-    u8g2.drawStr(45, 30, tempStr); // write something to the internal memory
+    u8g2.drawStr(40, 30, tempStr); // write something to the internal memory
   } else {
-    u8g2.drawStr(45, 30, tempStr); // write something to the internal memory
+    u8g2.drawStr(40, 30, tempStr); // write something to the internal memory
+  }
+
+  if (showDiff) {
+    int targetTemp = getTargetTemp();
+    
+    u8g2.setFont(u8g2_font_open_iconic_arrow_4x_t);  // choose a suitable font at https://github.com/olikraus/u8g2/wiki/fntlistall
+
+    if (targetTemp != 0) {
+      if (targetTemp > temp)
+        u8g2.drawStr(80, 31, "\x004B"); // write something to the internal memory
+      else if (targetTemp < temp) {
+        u8g2.drawStr(80, 31, "\x0048"); // write something to the internal memory
+      }
+    }
   }
   
   if (showBluetoothLogo) {
