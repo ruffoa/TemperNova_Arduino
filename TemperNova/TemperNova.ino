@@ -6,6 +6,15 @@
 
 U8G2_SSD1306_128X32_UNIVISION_F_HW_I2C u8g2(U8G2_R0); 
 
+void waitForConnection() {
+  bool deviceConnected = false;
+  
+  while(!isConnected) {
+    displayBluetoothLogo(500, 500);
+    deviceConnected = isConnected();
+  }
+}
+
 void setup() {
   // put your setup code here, to run once:
   u8g2.begin();
@@ -15,5 +24,18 @@ void setup() {
 void loop() {
   // put your main code here, to run repeatedly:
 //  displayLoadingMessage();
-  displayBluetoothLogo(500, 500);
+
+  displayBluetoothLogo(0, 0);
+  sendTempUpdate(80);
+  displayTemp(80, true, true);
+
+  delay(3000);
+  sendTempUpdate(60);
+  displayTemp(60, true, true);
+  
+  delay(3000);
+  sendTempUpdate(72);
+  displayTemp(72, true, true);
+
+  delay(3000);
 }
