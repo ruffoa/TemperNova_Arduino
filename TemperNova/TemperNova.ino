@@ -21,13 +21,13 @@ void setup() {
   // put your setup code here, to run once:
   u8g2.begin();
   setupBluetooth();
+  waitForConnection();
 }
 
 void loop() {
   // put your main code here, to run repeatedly:
 //  displayLoadingMessage();
 
-  displayBluetoothLogo(0, 0);
   sendTempUpdate(80);
   displayTemp(80, true, true, true);  // int temp, bool showUnits, bool showDiff, bool showBluetoothLogo
 

@@ -31,6 +31,7 @@ class BluetoothServerCallbacks: public BLEServerCallbacks {
 
     void onDisconnect(BLEServer* pServer) {
       deviceConnected = false;
+      targetTemp = 0;
     }
 };
 

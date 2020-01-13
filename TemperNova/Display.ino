@@ -37,6 +37,16 @@ void displayBluetoothLogo(int time, int del) {
   delay(time);
 }
 
+String convertToString(char* a, int size) 
+{ 
+    int i; 
+    String s = ""; 
+    for (i = 0; i < size; i++) { 
+        s = s + a[i]; 
+    } 
+    return s; 
+} 
+
 void displayTemp(int temp, bool showUnits, bool showDiff, bool showBluetoothLogo) {
   if (!temp) {
     return;
@@ -45,18 +55,19 @@ void displayTemp(int temp, bool showUnits, bool showDiff, bool showBluetoothLogo
   u8g2.clearBuffer();         // clear the internal memory
 
   // Write the temp to the buffer
-  u8g2.setFont(u8g2_font_logisoso22_tr);  // choose a suitable font at https://github.com/olikraus/u8g2/wiki/fntlistall
+  u8g2.setFont(u8g2_font_logisoso22_tf);  // choose a suitable font at https://github.com/olikraus/u8g2/wiki/fntlistall
   
-  char tempStr[4]; // make sure this is big enuffz
+  char tempStr[4]; // make sure this is big enuff
   itoa(temp, tempStr, 10);
-
-//  std::string temp = tempStr.concat("°C");
   
   if (showUnits) {
-    u8g2.drawStr(40, 30, tempStr); // write something to the internal memory
-  } else {
-    u8g2.drawStr(40, 30, tempStr); // write something to the internal memory
+//    String tempWithUnits = convertToString(tempStr, sizeof(tempStr) / sizeof(char)) + "\xb0";
+//    u8g2.drawStr(38, 30, tempWithUnits.c_str()); // write something to the internal memory
+    u8g2.drawStr(63, 30, "\xb0"); // write something to the internal memory
   }
+  
+  u8g2.drawStr(38, 30, tempStr); // write something to the internal memory
+  
 
   if (showDiff) {
     int targetTemp = getTargetTemp();
@@ -65,14 +76,14 @@ void displayTemp(int temp, bool showUnits, bool showDiff, bool showBluetoothLogo
 
     if (targetTemp != 0) {
       if (targetTemp > temp)
-        u8g2.drawStr(80, 31, "\x004B"); // write something to the internal memory
+        u8g2.drawStr(90, 31, "\x004B"); // write something to the internal memory
       else if (targetTemp < temp) {
-        u8g2.drawStr(80, 31, "\x0048"); // write something to the internal memory
+        u8g2.drawStr(90, 31, "\x0048"); // write something to the internal memory
       }
     }
   }
   
-  if (showBluetoothLogo) {
+  if (showBluetoothLogo && isConnected()) {
     u8g2.setFont(u8g2_font_open_iconic_embedded_4x_t);  // choose a suitable font at https://github.com/olikraus/u8g2/wiki/fntlistall
     u8g2.drawStr(0, 31, "\x004A"); // write something to the internal memory
   }
