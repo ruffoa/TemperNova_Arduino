@@ -1,3 +1,5 @@
+// Lib from this helpful guy: https://awtfy.com/2010/11/09/an-arduino-library-for-the-adt7310-spi-temperature-sensor/
+
 #define SELPIN 9             //Selection Pin  - to chip pin 4 (CS-)
 #define MUST_BE_OUTPUT 10    // This pin must be set to output for Hardware SPI to work, even if we don't use it. 
 
