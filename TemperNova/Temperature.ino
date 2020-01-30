@@ -75,3 +75,15 @@ int getRoundedTemp() {
   float temp = getTemp();
   return round(temp);
 }
+
+void controlTecs() {
+  int target = getTargetTemp();
+
+  if (temperature > target) {
+    // send cooldown command
+  } else if (temperature < target) {
+    // send heat command
+  } else {
+    // turn on and off to keep it at temp
+  }
+}
