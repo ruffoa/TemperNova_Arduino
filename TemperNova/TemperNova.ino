@@ -18,19 +18,18 @@ void waitForConnection() {
 
 void setup() {
   // put your setup code here, to run once:
-  u8g2.begin();
-  setupBluetooth();
-  waitForConnection();
-  setupTempSensor();
+  u8g2.begin();         // setup the OLED display
+  setupBluetooth();     // setup the BluetoothLE connection
+  waitForConnection();  // wait for a device to be connected (might not want this, idk)
+  setupTempSensor();    // setup the temp sensor
 }
 
 void loop() {
   // put your main code here, to run repeatedly:
-//  displayLoadingMessage();
 
-  int temp = getRoundedTemp();
-  sendTempUpdate(temp);
+  int temp = getRoundedTemp();  // round the temp first to an int, might want a 1 decimal float but idk
+  sendTempUpdate(temp);         // send new temp to connected BluetoothLE device, if applicable
   displayTemp(temp, true, true, true);  // int temp, bool showUnits, bool showDiff, bool showBluetoothLogo
 
-  delay(50);
+  delay(50);  // wait a little, in order to not spam the Bluetooth connection (and because temps won't change that quickly)
 }
