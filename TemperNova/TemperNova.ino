@@ -1,10 +1,8 @@
-//#include <ADT7310.h>
+#include <OneWire.h>  // temp sensor stuff
+#include <DallasTemperature.h>
 
 #include <U8g2lib.h>
 #include <U8x8lib.h>
-
-//#include <SPI.h>
-//#include <Wire.h>
 
 U8G2_SSD1306_128X32_UNIVISION_F_HW_I2C u8g2(U8G2_R0); 
 
@@ -23,32 +21,16 @@ void setup() {
   u8g2.begin();
   setupBluetooth();
   waitForConnection();
-  //  setupTempSensor();
-  setupAnalogTemp();   
+  setupTempSensor();
 }
 
 void loop() {
   // put your main code here, to run repeatedly:
 //  displayLoadingMessage();
-//  int temp = getRoundedTemp();
 
-//  int temp = getRoundedAnalogTemp();
-//  sendTempUpdate(temp);
-//  displayTemp(temp, true, true, true);  // int temp, bool showUnits, bool showDiff, bool showBluetoothLogo
-//
-//  delay(50);
+  int temp = getRoundedTemp();
+  sendTempUpdate(temp);
+  displayTemp(temp, true, true, true);  // int temp, bool showUnits, bool showDiff, bool showBluetoothLogo
 
-  sendTempUpdate(80);
-  displayTemp(80, true, true, true);  // int temp, bool showUnits, bool showDiff, bool showBluetoothLogo
-
-  delay(3000);
-  sendTempUpdate(60);
-  displayTemp(60, true, true, true);
-  
-  delay(3000);
-  sendTempUpdate(72);
-  displayTemp(72, true, true, true);
-
-  delay(3000);
-
+  delay(50);
 }
