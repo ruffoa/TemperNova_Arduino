@@ -1,3 +1,7 @@
+//#include <GxEPD2_GFX.h>
+
+#include <GxEPD2_3C.h>
+
 #include <OneWire.h>  // temp sensor stuff
 #include <DallasTemperature.h>
 
@@ -10,7 +14,7 @@ void waitForConnection() {
   bool deviceConnected = false;
   
   while(!deviceConnected) {
-    displayBluetoothLogo(500, 500);
+//    displayBluetoothLogo(500, 500);
 //    deviceConnected = isConnected();
       deviceConnected = true;
   }
@@ -22,6 +26,7 @@ void setup() {
   setupBluetooth();     // setup the BluetoothLE connection
   waitForConnection();  // wait for a device to be connected (might not want this, idk)
   setupTempSensor();    // setup the temp sensor
+  setupEink();
 }
 
 void loop() {
@@ -32,4 +37,4 @@ void loop() {
   displayTemp(temp, true, true, true);  // int temp, bool showUnits, bool showDiff, bool showBluetoothLogo
 
   delay(50);  // wait a little, in order to not spam the Bluetooth connection (and because temps won't change that quickly)
-}
+} 
