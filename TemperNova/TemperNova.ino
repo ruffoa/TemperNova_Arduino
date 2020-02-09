@@ -26,15 +26,23 @@ void setup() {
   setupBluetooth();     // setup the BluetoothLE connection
   waitForConnection();  // wait for a device to be connected (might not want this, idk)
   setupTempSensor();    // setup the temp sensor
-  setupEink();
 }
 
 void loop() {
   // put your main code here, to run repeatedly:
 
-  int temp = getRoundedTemp();  // round the temp first to an int, might want a 1 decimal float but idk
+//  int temp = getRoundedTemp();  // round the temp first to an int, might want a 1 decimal float but idk
+  int temp = 90;
   sendTempUpdate(temp);         // send new temp to connected BluetoothLE device, if applicable
   displayTemp(temp, true, true, true);  // int temp, bool showUnits, bool showDiff, bool showBluetoothLogo
 
   delay(50);  // wait a little, in order to not spam the Bluetooth connection (and because temps won't change that quickly)
+
+  while(temp > 40) {
+      temp--;
+      sendTempUpdate(temp);         // send new temp to connected BluetoothLE device, if applicable
+      displayTemp(temp, true, true, true);  // int temp, bool showUnits, bool showDiff, bool showBluetoothLogo
+
+      delay(350);  // wait a little, in order to not spam the Bluetooth connection (and because temps won't change that quickly)
+  }
 } 
