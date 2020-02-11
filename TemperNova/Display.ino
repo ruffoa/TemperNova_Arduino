@@ -1,3 +1,6 @@
+// sda - 21
+// scl - 22
+
 void displayLoadingMessage() {
   u8g2.clearBuffer();          // clear the internal memory
   u8g2.setFont(u8g2_font_logisoso16_tr );  // choose a suitable font at https://github.com/olikraus/u8g2/wiki/fntlistall

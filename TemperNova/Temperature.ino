@@ -89,41 +89,44 @@ int getRoundedTemp() {
 
 void controlTecs() {
   int target = getTargetTemp();
+  int rTemp = getRoundedTemp();
   
-  if (temperature > target) {
-    // send cooldown command
-    digitalWrite(TEMP_CONTROL_PIN, LOW);
-    Serial.print("Sending cooldown command to the TECS ");
-  } else if (temperature < target) {
-    // send heat command
-    digitalWrite(TEMP_CONTROL_PIN, HIGH);
-    Serial.print("Sending heat-up command to the TECS ");
-  } else {
-    if (wasCold) {
-      digitalWrite(TEMP_CONTROL_PIN, HIGH);
-      Serial.print("Sending heating command to the TECS (it's currently at temp though) ");
-    } else {
+  if (count % 2 == 0) {
+    if (rTemp > target) {
+      // send cooldown command
       digitalWrite(TEMP_CONTROL_PIN, LOW);
-      Serial.print("Sending cooldown command to the TECS (it's currently at temp though) ");
+      Serial.print("Sending cooldown command to the TECS ");
+    } else if (rTemp < target) {
+      // send heat command
+      digitalWrite(TEMP_CONTROL_PIN, HIGH);
+      Serial.print("Sending heat-up command to the TECS ");
+    } else {
+      if (wasCold) {
+        digitalWrite(TEMP_CONTROL_PIN, HIGH);
+        Serial.print("Sending heating command to the TECS (it's currently at temp though) ");
+      } else {
+        digitalWrite(TEMP_CONTROL_PIN, LOW);
+        Serial.print("Sending cooldown command to the TECS (it's currently at temp though) ");
+      }
     }
-  }
-
-  if (count <= 0) {
-    wasCold = !wasCold;
-    
-    count = SWAP_COUNT;
-    
-    lastOn = !lastOn;
-    Serial.println("Hit the 500 cycles, swapping which TEC, and heat / cool state for neutral");
-  } 
   
-  // turn on and off to keep it at temp
-  if (lastOn) {
-      digitalWrite(TECS_PIN, LOW);
-      Serial.println("Using TEC 1 (PIN LOW)");
-  } else {
-      digitalWrite(TECS_PIN, HIGH);
-      Serial.println("Using TEC 2 (PIN HIGH)");
+    if (count <= 0) {
+      wasCold = !wasCold;
+      
+      count = SWAP_COUNT;
+      
+      lastOn = !lastOn;
+      Serial.println("Hit the 500 cycles, swapping which TEC, and heat / cool state for neutral");
+    } 
+    
+    // turn on and off to keep it at temp
+    if (lastOn) {
+        digitalWrite(TECS_PIN, LOW);
+        Serial.println("Using TEC 1 (PIN LOW)");
+    } else {
+        digitalWrite(TECS_PIN, HIGH);
+        Serial.println("Using TEC 2 (PIN HIGH)");
+    }
   }
   
   count--;
