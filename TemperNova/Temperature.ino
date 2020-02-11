@@ -16,6 +16,7 @@ unsigned long lastTempRequest = 0;
 int  delayInMillis = 0;
 float temperature = 0.0;
 bool tecOneOn = false;
+bool wasCooling = true;
 int count = 520;
 
 char *addr2str(DeviceAddress deviceAddress) // translates the device address to a string, used for debugging
@@ -98,11 +99,22 @@ void controlTecs() {
   
   if (count % 2 == 0) {
     if (rTemp > target) {
+      if (!wasCooling) {
+        wasCooling = true;
+        tecOneOn = !tecOneOn;
+                count = SWAP_COUNT;
+      }
       // send cooldown command
       digitalWrite(TEMP_COLD_PIN, HIGH);
       digitalWrite(TEMP_HOT_PIN, LOW);
       Serial.print("Sending cooldown command to the TECS ");
     } else if (rTemp < target) {
+      if (wasCooling) {
+        wasCooling = false;
+        tecOneOn = !tecOneOn;
+        count = SWAP_COUNT;
+      }
+      
       // send heat command
       digitalWrite(TEMP_COLD_PIN, LOW);
       digitalWrite(TEMP_HOT_PIN, HIGH);
