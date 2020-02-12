@@ -22,7 +22,7 @@ void setup() {
   setupBluetooth();     // setup the BluetoothLE connection
   waitForConnection();  // wait for a device to be connected (might not want this, idk)
   setupTempSensor();    // setup the temp sensor
-  setupTecs();
+  setupTecs();          // setup the TEC output pins and the temp control output pins 
 }
 
 void loop() {
@@ -31,7 +31,7 @@ void loop() {
   int temp = getRoundedTemp();  // round the temp first to an int, might want a 1 decimal float but idk
   sendTempUpdate(temp);         // send new temp to connected BluetoothLE device, if applicable
   displayTemp(temp, true, true, true);  // int temp, bool showUnits, bool showDiff, bool showBluetoothLogo
-  controlTecs();
+  controlTecs();                // updates the TEC and heat / cool pins with the new state
   
   delay(50);  // wait a little, in order to not spam the Bluetooth connection (and because temps won't change that quickly)
 } 

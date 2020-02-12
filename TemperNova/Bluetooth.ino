@@ -33,12 +33,12 @@ class BluetoothServerCallbacks: public BLEServerCallbacks { // a collection of c
     }
 };
 
-class BluetoothCharacteristicCallbacks: public BLECharacteristicCallbacks {
+class BluetoothCharacteristicCallbacks: public BLECharacteristicCallbacks { // contains the callbacks for the Bluetooth connection
     void onWrite(BLECharacteristic *pCharacteristic) {  // on information recieved from the ble characteristic from the connected device
       std::string value = pCharacteristic->getValue();  // get the raw data from the Bluetooth connection
       String valueStr = "";
       
-      if (value.length() > 0) {
+      if (value.length() > 0) { // we got data!  Now we have to loop through it to make use of the data, as it is returned as a array of chars
         Serial.print("New Bluetooth value: ");
         for (int i = 0; i < value.length(); i++) {
           Serial.print(value[i]);
@@ -46,7 +46,7 @@ class BluetoothCharacteristicCallbacks: public BLECharacteristicCallbacks {
         }
           
         Serial.println();
-        int temp = valueStr.toInt();
+        int temp = valueStr.toInt();  // since we know the characteristic in the app only returns numbers, we can make this assumption
         if (temp != 0) {
           targetTemp = temp;
         }
@@ -54,7 +54,7 @@ class BluetoothCharacteristicCallbacks: public BLECharacteristicCallbacks {
     }
 };
 
-void setupBluetooth() {
+void setupBluetooth() { // sets up the BLE connection; starts the BLE server and advertises the connection to any nearby devices.
   Serial.begin(115200);
   Serial.println("Starting BLE work!");
 
@@ -81,24 +81,24 @@ void setupBluetooth() {
   Serial.println("Characteristic defined! Starting to advertise connection...");
 }
 
-bool isConnected() {
+bool isConnected() {  // gets the current connection state
   return deviceConnected;  
 }
 
-void sendTempUpdate(int newTemp) {
+void sendTempUpdate(int newTemp) {  // send the new temp value over the BLE connection
+  
   // check to see if device is connected...
-  if (deviceConnected) {
+  if (deviceConnected) {  // sanity check, obviously we should only send something if we are connected!
     char txString[8]; // make sure this is big enuff
-    itoa(newTemp, txString, 10);
-    double temp = (double)newTemp;
+    itoa(newTemp, txString, 10);  // call the int to string func, as the Bluetooth lib is quite picky about what data formats you can and can't send!
 
-    pCharacteristic->setValue(txString);
+    pCharacteristic->setValue(txString);  // set the characteristic value to our new temp (string), this will be picked up by the respective function in the app
 
-    pCharacteristic->notify();
-    delay(3);
+    pCharacteristic->notify();            // notify the connection that the data has changed!
+    delay(3);                             // add a short delay to prevent spamming the connection, as the BLE connection will start to queue & drop the packets on the app side if it can't process them fast enough!
   }
 }
 
-int getTargetTemp() {
+int getTargetTemp() {                     // get the target temp specified in the app
   return targetTemp;
 }

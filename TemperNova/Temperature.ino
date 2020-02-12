@@ -35,14 +35,14 @@ char *addr2str(DeviceAddress deviceAddress) // translates the device address to 
     return (return_me);
 }
 
-void setupTecs() {
+void setupTecs() {  // set the TEC and Temp direction pins to output
   pinMode(TECS_ONE_PIN, OUTPUT); 
   pinMode(TECS_TWO_PIN, OUTPUT); 
   pinMode(TEMP_HOT_PIN, OUTPUT); 
   pinMode(TEMP_COLD_PIN, OUTPUT);
 }
 
-void setupTempSensor() {
+void setupTempSensor() {  // do the requisite setup to make sure it all works!
   sensors.begin();
 
   Serial.print("Locating devices...");
@@ -67,7 +67,7 @@ void setupTempSensor() {
   Serial.println(lastTempRequest);
 }
 
-float getTemp() {
+float getTemp() { // get the last sensor reading from the temp sensor 
   if (millis() - lastTempRequest >= delayInMillis) // have to let the sensor cool down, will make sure we wait long enough before calling it again
   {
     sensors.setWaitForConversion(true);
@@ -88,27 +88,27 @@ float getTemp() {
   return temperature;
 }
 
-int getRoundedTemp() {
+int getRoundedTemp() {  // app uses int values for the temp, so for consistency, basically all of the code uses ints here as well
   float temp = getTemp();
   return round(temp);
 }
 
-void controlTecs() {
-  int target = getTargetTemp();
-  int rTemp = getRoundedTemp();
+void controlTecs() {    // controlls which TEC is on, and whether to heat or cool based on the current state, and which TEC was last on
+  int target = getTargetTemp(); // get the target temp send from the app
+  int rTemp = getRoundedTemp(); // get the rounded temp from the sensor - this is the last measured temperature reading
   
-  if (count % 2 == 0) {
-    if (rTemp > target) {
-      if (!wasCooling) {
-        wasCooling = true;
-        tecOneOn = !tecOneOn;
-                count = SWAP_COUNT;
+  if (count % 2 == 0) { // waits ~100 ms before running through the following stuff, just to make the log a bit more readable, and since the temp is not likely to change within ~100 ms :P 
+    if (rTemp > target) { // if we are now cooling down to reach the target temp
+      if (!wasCooling) {  // if the last state was to heat, then flip the boolean to note that we are now cooling (used for making sure a TEC never goes from heating -> cooling without a slight break
+        wasCooling = true;  
+        tecOneOn = !tecOneOn; // thus, we will flip the current TEC to the other one and reset the "timer" back to ~24 seconds
+        count = SWAP_COUNT;   // reset the "timer", this is set to 520 cycles through the code, at ~60 ms / cycle
       }
       // send cooldown command
-      digitalWrite(TEMP_COLD_PIN, HIGH);
+      digitalWrite(TEMP_COLD_PIN, HIGH);  // turn on "cooling" mode, and turn off heating mode
       digitalWrite(TEMP_HOT_PIN, LOW);
-      Serial.print("Sending cooldown command to the TECS ");
-    } else if (rTemp < target) {
+      Serial.print("Sending cooldown command to the TECS ");  
+    } else if (rTemp < target) {  // else do the opposite :)
       if (wasCooling) {
         wasCooling = false;
         tecOneOn = !tecOneOn;
@@ -119,13 +119,13 @@ void controlTecs() {
       digitalWrite(TEMP_COLD_PIN, LOW);
       digitalWrite(TEMP_HOT_PIN, HIGH);
       Serial.print("Sending heat-up command to the TECS ");
-    } else {
+    } else {  // we are at approx the right temp (after rounding, so really +- 1 degree ish), so turn off the TECs for now
         digitalWrite(TEMP_COLD_PIN, LOW);
         digitalWrite(TEMP_HOT_PIN, LOW);
         Serial.print("Sending command to turn off the TECS (it's currently at temp) ");
     }
   
-    if (count <= 0) {      
+    if (count <= 0) {   // we have reached our ~24 ish seconds, so lets swap the active TEC
       count = SWAP_COUNT;
       
       tecOneOn = !tecOneOn;
@@ -133,7 +133,7 @@ void controlTecs() {
     } 
     
     // turn on and off to keep it at temp
-    if (tecOneOn) {
+    if (tecOneOn) { // turn on the respective TEC based on the current state.  This'll flip every 520 cycles (~24 ish seconds or so)
         digitalWrite(TECS_ONE_PIN, HIGH);
         digitalWrite(TECS_TWO_PIN, LOW);
         Serial.println("Using TEC 1 (TEC 2 Off)");
